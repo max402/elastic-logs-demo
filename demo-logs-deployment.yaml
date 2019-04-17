@@ -1,0 +1,32 @@
+kind: "DeploymentConfig"
+apiVersion: "v1"
+metadata:
+  name: "demo-logs-service"
+spec:
+  template:
+    metadata:
+      labels:
+        name: "demo-logs-service"
+    spec:
+      containers:
+        - name: "demo-logs-service"
+          image: "demo-logs:latest"
+          ports:
+            - containerPort: 8080
+              protocol: "TCP"
+
+  replicas: 1
+  triggers:
+    - type: "ConfigChange"
+    - type: "ImageChange"
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - "demo-logs-service"
+        from:
+          kind: "ImageStreamTag"
+          name: "demo-logs-service:latest"
+  strategy:
+    type: "Rolling"
+  paused: false
+  revisionHistoryLimit: 2
